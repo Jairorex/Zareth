@@ -14,15 +14,20 @@ const ProveedorAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar proveedor con ID: ${id}`);
-
+    window.location.href = `proveedor/editar/${id}`;
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el proveedor con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar proveedor con ID: ${id}`);
-  
+      try {
+        await Config.deleteProveedor(id); 
+        alert(`Proveedor con ID: ${id} eliminado correctamente.`);
+        setProveedor(proveedor.filter((prov) => prov.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar el Proveedor:', error);
+        alert('No se pudo eliminar el Proveedor.');
+      }
     }
   };
 
@@ -31,6 +36,7 @@ const ProveedorAll = () => {
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Listado de Proveedores</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -59,7 +65,7 @@ const ProveedorAll = () => {
                      
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
+                          className="btn btn-primary btn-sm  me-2"
                           onClick={() => handleEdit(proveedor.id)}
                         >
                           Editar

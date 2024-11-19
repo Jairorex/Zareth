@@ -14,23 +14,32 @@ const CompraAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar Compra con ID: ${id}`);
+    window.location.href = `compra/editar/${id}`;
     
   };
 
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar Compra con ID: ${id}?`);
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar la Compra con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar Compra con ID: ${id}`);
-     
+      try {
+        await Config.deleteCompra(id); 
+        alert(`Compra con ID: ${id} eliminado correctamente.`);
+        setCompra(compra.filter((compra) => compra.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar esta compra:', error);
+        alert('No se pudo eliminar la compra.');
+      }
     }
   };
 
   return (
+    
     <div className="row">
+     
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Listado de Compras</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -63,14 +72,14 @@ const CompraAll = () => {
                       <td>{compra.proveedores_id}</td>
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
-                          onClick={() => handleEdit(venta.id)}
+                          className="btn btn-primary btn-sm  me-2"
+                          onClick={() => handleEdit(compra.id)}
                         >
                           Editar
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
-                          onClick={() => handleDelete(venta.id)}
+                          onClick={() => handleDelete(compra.id)}
                         >
                           Eliminar
                         </button>

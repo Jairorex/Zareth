@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext"; // Importar el contexto de autenticación
+import { useAuth } from "./AuthContext";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -20,154 +20,152 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const toggleMenu = (menu) => {
-    setOpenMenus((prevState) => {
-      const newState = { ...prevState, [menu]: !prevState[menu] };
+  const toggleMenu = (key) => {
+    setOpenMenus((prev) => {
+      const newState = {};
+      Object.keys(prev).forEach((menuKey) => {
+        newState[menuKey] = menuKey === key ? !prev[menuKey] : false; // Abre solo el seleccionado, cierra los demás
+      });
       return newState;
     });
   };
-
-  // Función de logout
+  
+ 
   const handleLogout = () => {
-    const confirmLogout = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
-    if (confirmLogout) {
-      logout(); // Llama a la función de logout
-      navigate("/"); // Redirige a la página principal
+    if (window.confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+      logout();
+      navigate("/");
     }
   };
 
   if (!isAuthenticated) {
-    return null; // No renderiza la Sidebar si no está autenticado
+    return null;
   }
 
   return (
-    <div className="sidebar">
-     
-      <div className="sidebar-content">
-        <ul>
-          {location.pathname !== '/' && (
-            <li>
-              <Link to="/admin" className="sidebar-button">
-                Home
+    <div className="d-flex flex-column vh-100 bg-primary text-white p-3 sidebar">
+      <div className="text-center mb-4">
+        <img
+          src="/img/logo.png"
+          alt="Logo"
+          className="img-fluid mb-2"
+          style={{ maxWidth: "200px" }}
+        />
+        <h5 className="fw-bold">Farmacia Zareth</h5>
+      </div>
+
+      <div className="flex-grow-1">
+        <ul className="nav flex-column">
+          {location.pathname !== "/" && (
+            <li className="nav-item mb-2">
+              <Link to="/admin" className="btn btn-primary w-100 text-start">
+                <i className="bi bi-house-door me-2"></i> Home
               </Link>
             </li>
           )}
 
-          
-          <li>
-            <button onClick={() => toggleMenu("productos")} className="sidebar-button">
-              Productos
-            </button>
-            {openMenus.productos && (
-              <ul>
-                <li><Link to="/admin/producto/crear">Crear Producto</Link></li>
-                <li><Link to="/admin/producto">Listar Productos</Link></li>
-              </ul>
-            )}
-          </li>
-
-
-          <li>
-            <button onClick={() => toggleMenu("estantes")} className="sidebar-button">
-              Estantes
-            </button>
-            {openMenus.estantes && (
-              <ul>
-                <li><Link to="/admin/estante/crear">Crear Estante</Link></li>
-                <li><Link to="/admin/estante">Listar Estantes</Link></li>
-              </ul>
-            )}
-          </li>
-
-
-          <li>
-            <button onClick={() => toggleMenu("marcas")} className="sidebar-button">
-              Marcas
-            </button>
-            {openMenus.marcas && (
-              <ul>
-                <li><Link to="/admin/marca/crear">Crear Marca</Link></li>
-                <li><Link to="/admin/marca">Listar Marcas</Link></li>
-              </ul>
-            )}
-          </li>
-
- 
-          <li>
-            <button onClick={() => toggleMenu("laboratorios")} className="sidebar-button">
-              Laboratorios
-            </button>
-            {openMenus.laboratorios && (
-              <ul>
-                <li><Link to="/admin/laboratorio/crear">Crear Laboratorio</Link></li>
-                <li><Link to="/admin/laboratorio">Listar Laboratorios</Link></li>
-              </ul>
-            )}
-          </li>
-
- 
-          <li>
-            <button onClick={() => toggleMenu("tiposProducto")} className="sidebar-button">
-              Tipos de Producto
-            </button>
-            {openMenus.tiposProducto && (
-              <ul>
-                <li><Link to="/admin/tipo/crear">Crear Tipo de Producto</Link></li>
-                <li><Link to="/admin/tipo">Listar Tipos de Producto</Link></li>
-              </ul>
-            )}
-          </li>
-
-
-          <li>
-            <button onClick={() => toggleMenu("proveedores")} className="sidebar-button">
-              Proveedores
-            </button>
-            {openMenus.proveedores && (
-              <ul>
-                <li><Link to="/admin/proveedor/crear">Crear Proveedor</Link></li>
-                <li><Link to="/admin/proveedor">Listar Proveedores</Link></li>
-              </ul>
-            )}
-          </li>
-
-          <li>
-            <button onClick={() => toggleMenu("ventas")} className="sidebar-button">
-              Ventas
-            </button>
-            {openMenus.ventas && (
-              <ul>
-                <li><Link to="/admin/venta/crear">Registrar Venta</Link></li>
-                <li><Link to="/admin/venta">Listar Ventas</Link></li>
-              </ul>
-            )}
-          </li>
-
-
-          <li>
-            <button onClick={() => toggleMenu("compras")} className="sidebar-button">
-              Compras
-            </button>
-            {openMenus.compras && (
-              <ul>
-                <li><Link to="/admin/compra/crear">Registrar Compra</Link></li>
-                <li><Link to="/admin/compra">Listar Compras</Link></li>
-              </ul>
-            )}
-          </li>
-
-
-          <li>
-            <button onClick={handleLogout} className="sidebar-button logout-btn">
-              Logout
-            </button>
-          </li>
+          {[
+            {
+              label: "Productos",
+              key: "productos",
+              links: [
+                { to: "/admin/producto/crear", text: "Crear Producto" },
+                { to: "/admin/producto", text: "Listar Productos" },
+              ],
+            },
+            {
+              label: "Estantes",
+              key: "estantes",
+              links: [
+                { to: "/admin/estante/crear", text: "Crear Estante" },
+                { to: "/admin/estante", text: "Listar Estantes" },
+              ],
+            },
+            {
+              label: "Marcas",
+              key: "marcas",
+              links: [
+                { to: "/admin/marca/crear", text: "Crear Marca" },
+                { to: "/admin/marca", text: "Listar Marcas" },
+              ],
+            },
+            {
+              label: "Laboratorios",
+              key: "laboratorios",
+              links: [
+                { to: "/admin/laboratorio/crear", text: "Crear Laboratorio" },
+                { to: "/admin/laboratorio", text: "Listar Laboratorios" },
+              ],
+            },
+            {
+              label: "Tipos de Producto",
+              key: "tiposProducto",
+              links: [
+                { to: "/admin/tipo/crear", text: "Crear Tipo de Producto" },
+                { to: "/admin/tipo", text: "Listar Tipos de Producto" },
+              ],
+            },
+            {
+              label: "Proveedores",
+              key: "proveedores",
+              links: [
+                { to: "/admin/proveedor/crear", text: "Crear Proveedor" },
+                { to: "/admin/proveedor", text: "Listar Proveedores" },
+              ],
+            },
+            {
+              label: "Ventas",
+              key: "ventas",
+              links: [
+                { to: "/admin/venta/crear", text: "Registrar Venta" },
+                { to: "/admin/venta", text: "Listar Ventas" },
+              ],
+            },
+            {
+              label: "Compras",
+              key: "compras",
+              links: [
+                { to: "/admin/compra/crear", text: "Registrar Compra" },
+                { to: "/admin/compra", text: "Listar Compras" },
+              ],
+            },
+          ].map((menu) => (
+            <li className="nav-item mb-2" key={menu.key}>
+              <button
+                className="btn btn-primary w-100 text-start"
+                onClick={() => toggleMenu(menu.key)}
+              >
+                <i className="bi bi-box me-2"></i> {menu.label}
+                <i
+                  className={`bi bi-chevron-${
+                    openMenus[menu.key] ? "down" : "right"
+                  } ms-2 text-white`}
+                ></i>
+              </button>
+              {openMenus[menu.key] && (
+                <ul className="nav flex-column ms-3 mt-1">
+                  {menu.links.map((link, index) => (
+                    <li key={index} className="nav-item">
+                      <Link className="nav-link text-white" to={link.to}>
+                        <i className="bi bi-arrow-right-short"></i> {link.text}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
         </ul>
-
-       
+      
+    
+      </div>
+      <div className="mt-auto">
+        <button onClick={handleLogout} className="btn btn-danger w-100">
+          <i className="bi bi-box-arrow-right me-2"></i> Logout
+        </button>
       </div>
     </div>
-  );
+    );
 };
 
 export default Sidebar;

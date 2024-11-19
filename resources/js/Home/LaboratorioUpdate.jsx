@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Config from '../Config'; 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const LaboratorioCreate = () => {
+const LaboratorioUpdate = () => {
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const [laboratorio, setLaboratorio] = useState({
     codLab: '',
@@ -15,20 +16,31 @@ const LaboratorioCreate = () => {
   const [marca, setMarca] = useState([]);
 
   useEffect(() => {
-    const fetchMarca = async () => {
-      try {
-        const response = await Config.getMarca();
-        setMarca(response.data);  
-      } catch (error) {
-        console.error("Error al obtener las marcas:", error);
-      }
-    };
-    fetchMarca();
-  }, []); 
+    fetchLaboratorio();
+    fetchMarcas();
+  }, [id]);
+
+  const fetchLaboratorio = async () => {
+    try {
+      const response = await Config.getLaboratorioById(id); 
+      setLaboratorio(response.data);
+    } catch (error) {
+      console.error("Error al obtener el laboratorio:", error);
+      alert('No se pudo cargar la información del laboratorio.');
+    }
+  };
+
+  const fetchMarcas = async () => {
+    try {
+      const response = await Config.getMarca();
+      setMarca(response.data);
+    } catch (error) {
+      console.error("Error al obtener las marcas:", error);
+    }
+  };
 
   const handleLaboratorioChange = (e) => {
     const { name, value } = e.target;
-    setLaboratorio({ ...laboratorio, [name]: value });
     if (name === 'codLab' && value.length <= 4) {
       setLaboratorio({ ...laboratorio, [name]: value });
     } else if (name !== 'codLab') {
@@ -39,17 +51,18 @@ const LaboratorioCreate = () => {
   const handleLaboratorioSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await Config.createLaboratorio(laboratorio);
-      alert('Laboratorio creado exitosamente');
+      await Config.updateLaboratorio(id, laboratorio); 
+      alert('Laboratorio actualizado exitosamente');
       navigate('/admin/laboratorio'); 
     } catch (error) {
-      alert('Error al crear el laboratorio');
+      console.error("Error al actualizar el laboratorio:", error);
+      alert('No se pudo actualizar el laboratorio.');
     }
   };
 
   return (
     <div className="container">
-      <h2 className="mt-4">Crear Laboratorio</h2>
+      <h2 className="mt-4">Editar Laboratorio</h2>
       <form onSubmit={handleLaboratorioSubmit}>
         <div className="mb-3">
           <label htmlFor="codLab" className="form-label">Código de Laboratorio</label>
@@ -77,7 +90,7 @@ const LaboratorioCreate = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="direccionLab" className="form-label">Dirección del Laboratorio</label>
+          <label htmlFor="direcionLab" className="form-label">Dirección del Laboratorio</label>
           <input
             type="text"
             className="form-control"
@@ -111,17 +124,17 @@ const LaboratorioCreate = () => {
             required
           >
             <option value="">Seleccionar Marca</option>
-            {marca.map((marca) => (
-              <option key={marca.id} value={marca.id}>
-                {marca.nombreM} 
+            {marca.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nombreM}
               </option>
             ))}
           </select>
         </div>
-        <button type="submit" className="btn btn-primary">Crear Laboratorio</button>
+        <button type="submit" className="btn btn-primary">Actualizar Laboratorio</button>
       </form>
     </div>
   );
 };
 
-export default LaboratorioCreate;
+export default LaboratorioUpdate;

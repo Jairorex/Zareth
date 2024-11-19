@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Config from '../Config';  
-import { useNavigate } from 'react-router-dom';
+import Config from '../Config';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const ProductoCreate = () => {
+const ProductoUpdate = () => {
+  const { id } = useParams();  
   const navigate = useNavigate();
+
+
   const [producto, setProducto] = useState({
     codigo: '',
     nombrePD: '',
@@ -13,15 +16,15 @@ const ProductoCreate = () => {
     estante_id: '',
     tipo_producto_id: ''
   });
-  
+
   const [laboratorio, setLaboratorio] = useState([]);
   const [estante, setEstante] = useState([]);
   const [tipo, setTipo] = useState([]);
 
   useEffect(() => {
-    
     fetchData();
-  }, []);
+    fetchProducto();
+  }, [id]);
 
   const fetchData = async () => {
     try {
@@ -33,37 +36,17 @@ const ProductoCreate = () => {
       setEstante(estanteResponse.data);
       setTipo(tipoResponse.data);
     } catch (error) {
-      console.error("Error fetching data: ", error);
+      console.error('Error fetching data: ', error);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProducto({ ...producto, [name]: value });
-    if (name === 'codigo' && value.length <= 4) {
-      setProducto({ ...producto, [name]: value });
-    } else if (name !== 'codigo') {
-      setProducto({ ...producto, [name]: value });
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault(); 
+  const fetchProducto = async () => {
     try {
-      const response = await Config.createProducto(producto); 
-      alert('Producto creado exitosamente'); 
-      setProducto({ 
-        codigo: '',
-        nombrePD: '',
-        descripcionPD: '',
-        cantidad: '',
-        laboratorio_id: '',
-        estante_id: '',
-        tipo_producto_id: ''
-      });
-      navigate('/admin/producto'); 
+      const response = await Config.getProductoById(id);
+      console.log('Producto response:', response.data); 
+      setProducto(response.data);
     } catch (error) {
-      // Manejador de errores
+      console.error('Error fetching producto:', error);  
       if (error.response) {
         console.error('Error del servidor:', error.response.data);
         alert(`Error del servidor: ${error.response.data.message || 'Ocurrió un error inesperado.'}`);
@@ -78,11 +61,35 @@ const ProductoCreate = () => {
   };
   
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProducto({ ...producto, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await Config.updateProducto(id, producto);
+      alert('Producto actualizado exitosamente');
+      navigate('/admin/producto'); 
+    } catch (error) {
+      if (error.response) {
+        console.error('Error del servidor:', error.response.data);
+        alert(`Error del servidor: ${error.response.data.message || 'Ocurrió un error inesperado.'}`);
+      } else if (error.request) {
+        console.error('Error en la solicitud:', error.request);
+        alert('No se recibió respuesta del servidor. Verifica tu conexión.');
+      } else {
+        console.error('Error inesperado:', error.message);
+        alert(`Error inesperado: ${error.message}`);
+      }
+    }
+  };
+
   return (
     <div className="container">
-      <h2 className="mt-4">Crear Producto</h2>
+      <h2 className="mt-4">Editar Producto</h2>
       <form onSubmit={handleSubmit}>
-       
         <div className="mb-3">
           <label htmlFor="codigo" className="form-label">Código</label>
           <input
@@ -94,12 +101,12 @@ const ProductoCreate = () => {
             onChange={handleChange}
             required
             maxLength={4}
+            disabled
           />
         </div>
 
-       
         <div className="mb-3">
-          <label htmlFor="nombre" className="form-label">Nombre del Producto</label>
+          <label htmlFor="nombrePD" className="form-label">Nombre del Producto</label>
           <input
             type="text"
             className="form-control"
@@ -112,7 +119,7 @@ const ProductoCreate = () => {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="descripcion" className="form-label">Descripción</label>
+          <label htmlFor="descripcionPD" className="form-label">Descripción</label>
           <textarea
             className="form-control"
             id="descripcionPD"
@@ -124,7 +131,6 @@ const ProductoCreate = () => {
           />
         </div>
 
-       
         <div className="mb-3">
           <label htmlFor="cantidad" className="form-label">Cantidad</label>
           <input
@@ -138,7 +144,6 @@ const ProductoCreate = () => {
           />
         </div>
 
-    
         <div className="mb-3">
           <label htmlFor="estante_id" className="form-label">Estante</label>
           <select
@@ -150,15 +155,14 @@ const ProductoCreate = () => {
             required
           >
             <option value="">Seleccionar Estante</option>
-            {estante.map((estante) => (
-              <option key={estante.id} value={estante.id}>
-                {estante.codigoE} - {estante.descripcionE}
+            {estante.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.codigoE} - {e.descripcionE}
               </option>
             ))}
           </select>
         </div>
 
-    
         <div className="mb-3">
           <label htmlFor="laboratorio_id" className="form-label">Laboratorio</label>
           <select
@@ -170,17 +174,14 @@ const ProductoCreate = () => {
             required
           >
             <option value="">Seleccionar Laboratorio</option>
-            {laboratorio.map((laboratorio) => (
-              <option key={laboratorio.id} value={laboratorio.id}>
-                {laboratorio.nombreLab}
+            {laboratorio.map((lab) => (
+              <option key={lab.id} value={lab.id}>
+                {lab.nombreLab}
               </option>
             ))}
           </select>
         </div>
 
-       
-
-       
         <div className="mb-3">
           <label htmlFor="tipo_producto_id" className="form-label">Tipo de Producto</label>
           <select
@@ -192,19 +193,18 @@ const ProductoCreate = () => {
             required
           >
             <option value="">Seleccionar Tipo</option>
-            {tipo.map((tipo) => (
-              <option key={tipo.id} value={tipo.id}>
-                {tipo.nombreTP}
+            {tipo.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nombreTP}
               </option>
             ))}
           </select>
         </div>
 
-      
-        <button type="submit" className="btn btn-primary">Crear Producto</button>
+        <button type="submit" className="btn btn-primary">Actualizar Producto</button>
       </form>
     </div>
   );
 };
 
-export default ProductoCreate;
+export default ProductoUpdate;

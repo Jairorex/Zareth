@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string("ruc",50);
             $table->integer("telefono");
             $table->string("direccion"); 
-            $table->string("urlfoto");
             $table->timestamps();
         });
     }

@@ -34,7 +34,7 @@ class CompraController extends Controller
  
     public function show($id)
     {
-        $compra = Compra::with(['producto', 'proveedor'])->find($id);
+        $compra = Compra::with(['producto', 'proveedores'])->find($id);
         if (!$compra) {
             return response()->json(['message' => 'Compra no encontrada'], 404);
         }

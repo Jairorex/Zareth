@@ -14,15 +14,21 @@ const MarcaAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar marca con ID: ${id}`);
+    window.location.href = `marca/editar/${id}`;
 
   };
 
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar la marca con ID: ${id}?`);
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar la Marca con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar marca con ID: ${id}`);
-  
+      try {
+        await Config.deleteMarca(id); 
+        alert(`Marca con ID: ${id} eliminado correctamente.`);
+        setMarca(marcaarca.filter((marca) => marca.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar la Marca:', error);
+        alert('No se pudo eliminar la Marca.');
+      }
     }
   };
 
@@ -31,6 +37,7 @@ const MarcaAll = () => {
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Listado de Marcas</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -53,7 +60,7 @@ const MarcaAll = () => {
                      
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
+                          className="btn btn-primary btn-sm  me-2"
                           onClick={() => handleEdit(marca.id)}
                         >
                           Editar

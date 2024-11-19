@@ -14,15 +14,20 @@ const LaboratorioAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar Laboratorio con ID: ${id}`);
-    // Aquí puedes redirigir o mostrar un formulario de edición
+    window.location.href = `laboratorio/editar/${id}`;
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el Laboratorio con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar Laboratorio con ID: ${id}`);
-      // Aquí puedes hacer la lógica para eliminar el producto
+      try {
+        await Config.deleteLaboratorio(id); 
+        alert(`Laboratorio con ID: ${id} eliminado correctamente.`);
+        setLaboratorio(laboratorio.filter((lab) => lab.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar el Laboratorio:', error);
+        alert('No se pudo eliminar el Laboratorio.');
+      }
     }
   };
 
@@ -31,6 +36,7 @@ const LaboratorioAll = () => {
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Listado de Laboratorios</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -59,7 +65,7 @@ const LaboratorioAll = () => {
                       <td>{laboratorio.marca_id}</td>
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
+                          className="btn btn-primary btn-sm  me-2"
                           onClick={() => handleEdit(laboratorio.id)}
                         >
                           Editar

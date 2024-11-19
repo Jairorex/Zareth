@@ -14,15 +14,21 @@ const VentaAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar Venta con ID: ${id}`);
+    window.location.href = `venta/editar/${id}`;
     
   };
 
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar Venta con ID: ${id}?`);
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar la Venta con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar Venta con ID: ${id}`);
-     
+      try {
+        await Config.deleteVenta(id); 
+        alert(`Venta con ID: ${id} eliminado correctamente.`);
+        setVenta(venta.filter((venta) => venta.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar la Venta:', error);
+        alert('No se pudo eliminar la Venta.');
+      }
     }
   };
 
@@ -31,6 +37,7 @@ const VentaAll = () => {
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Listado de Ventas</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -61,7 +68,7 @@ const VentaAll = () => {
                       <td>{venta.producto_id}</td>
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
+                          className="btn btn-primary btn-sm  me-2"
                           onClick={() => handleEdit(venta.id)}
                         >
                           Editar

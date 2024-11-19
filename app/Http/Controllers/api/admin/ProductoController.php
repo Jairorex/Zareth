@@ -10,7 +10,7 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::with(['laboratorio', 'estante', 'tipoProducto'])->get();
+        $productos = producto::with(['laboratorio', 'estante', 'tipoProducto'])->get();
         return response()->json($productos, 200);
     }
 
@@ -28,25 +28,26 @@ class ProductoController extends Controller
             'tipo_producto_id' => 'required|exists:tipo_productos,id',
         ]);
 
-        $producto = Producto::create($request->all());
+        $producto = producto::create($request->all());
         return response()->json($producto, 201);
     }
 
-    // Obtener un producto por ID
     public function show($id)
     {
-        $producto = Producto::with(['laboratorio', 'estante', 'tipoProducto'])->find($id);
+        $producto = Producto::find($id);
+    
         if (!$producto) {
             return response()->json(['message' => 'Producto no encontrado'], 404);
         }
+    
         return response()->json($producto, 200);
     }
-
+    
    
   
     public function update(Request $request, $id)
     {
-        $producto = Producto::find($id);
+        $producto = producto::find($id);
         if (!$producto) {
             return response()->json(['message' => 'Producto no encontrado'], 404);
         }
@@ -69,7 +70,7 @@ class ProductoController extends Controller
    
     public function destroy($id)
     {
-        $producto = Producto::find($id);
+        $producto = producto::find($id);
         if (!$producto) {
             return response()->json(['message' => 'Producto no encontrado'], 404);
         }

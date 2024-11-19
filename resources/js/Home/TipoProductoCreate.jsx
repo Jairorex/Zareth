@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Config from '../Config'; 
+import { useNavigate } from 'react-router-dom';
 
 const TipoProductoCreate = () => {
+  const navigate = useNavigate();
   const [tipoProducto, setTipoProducto] = useState({
     nombreTP: '',
     descripcionTP: ''
@@ -24,6 +26,7 @@ const TipoProductoCreate = () => {
         nombreTP: '',
         descripcionTP: ''
       }); 
+      navigate('/admin/tipo'); 
     } catch (error) {
       alert('Error al crear el Tipo de Producto');
     }

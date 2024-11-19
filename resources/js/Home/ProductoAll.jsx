@@ -14,23 +14,32 @@ const ProductoAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar producto con ID: ${id}`);
-    // Aquí puedes redirigir o mostrar un formulario de edición
+
+    window.location.href = `producto/editar/${id}`;
+   
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el producto con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar producto con ID: ${id}`);
-      // Aquí puedes hacer la lógica para eliminar el producto
+      try {
+        await Config.deleteProducto(id); 
+        alert(`Producto con ID: ${id} eliminado correctamente.`);
+        setProducto(producto.filter((prod) => prod.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        alert('No se pudo eliminar el producto.');
+      }
     }
   };
+  
 
   return (
     <div className="row">
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Listado de Productos</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -59,11 +68,11 @@ const ProductoAll = () => {
                       <td>{producto.descripcionPD}</td>
                       <td>{producto.cantidad}</td>
                       <td>{producto.laboratorio_id || "Sin laboratorio"}</td>
-                      <td>{producto.estante_id?.nombre || "Sin estante"}</td>
+                      <td>{producto.estante_id || "Sin estante"}</td>
                       <td>{producto.tipo_producto_id || "Sin tipo de producto"}</td>
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
+                          className="btn btn-primary btn-sm  me-2"
                           onClick={() => handleEdit(producto.id)}
                         >
                           Editar

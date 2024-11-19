@@ -14,15 +14,20 @@ const EstanteAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar estante con ID: ${id}`);
-    // Aquí puedes redirigir o mostrar un formulario de edición
+    window.location.href = `estante/editar/${id}`;
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el estante con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar estante con ID: ${id}`);
-      // Aquí puedes hacer la lógica para eliminar el producto
+      try {
+        await Config.deleteEstante(id); 
+        alert(`estante con ID: ${id} eliminado correctamente.`);
+        setEstante(estante.filter((estante) => estante.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar el estante:', error);
+        alert('No se pudo eliminar el estante.');
+      }
     }
   };
 
@@ -31,6 +36,7 @@ const EstanteAll = () => {
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Listado de Estantes</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -53,7 +59,7 @@ const EstanteAll = () => {
                      
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
+                          className="btn btn-primary btn-sm  me-2"
                           onClick={() => handleEdit(estante.id)}
                         >
                           Editar

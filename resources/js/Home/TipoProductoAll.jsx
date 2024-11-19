@@ -14,15 +14,20 @@ const TipoProductoAll = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editar Tipo de producto con ID: ${id}`);
-    
+    window.location.href = `tipo/editar/${id}`;
   };
 
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el Tipo de producto con ID: ${id}?`);
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el Tipo de Producto con ID: ${id}?`);
     if (confirmDelete) {
-      console.log(`Eliminar Tipo de producto con ID: ${id}`);
-      
+      try {
+        await Config.deleteTipo(id); 
+        alert(`Tipo de Producto con ID: ${id} eliminado correctamente.`);
+        setTipo(tipo.filter((tipo) => tipo.id !== id));
+      } catch (error) {
+        console.error('Error al eliminar el tipo de producto:', error);
+        alert('No se pudo eliminar el Tipo de Producto.');
+      }
     }
   };
 
@@ -31,6 +36,7 @@ const TipoProductoAll = () => {
       <div className="col-sm-12">
         <div className="card">
           <div className="card-body">
+          <h3 className="card-title text-center mb-4">Tipos de Productos</h3>
             <table className="table table-striped table-hover table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -53,7 +59,7 @@ const TipoProductoAll = () => {
                      
                       <td>
                         <button
-                          className="btn btn-warning btn-sm me-2"
+                          className="btn btn-primary btn-sm  me-2"
                           onClick={() => handleEdit(tipo.id)}
                         >
                           Editar

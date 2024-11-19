@@ -1,18 +1,31 @@
-import React, { useState } from 'react';
-import Config from '../Config'; 
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import Config from '../Config';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const EstanteCreate = () => {
+const EstanteUpdate = () => {
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const [estante, setEstante] = useState({
     codigoE: '',
     descripcionE: ''
   });
 
+  useEffect(() => {
+    fetchEstante();
+  }, [id]);
+
+  const fetchEstante = async () => {
+    try {
+      const response = await Config.getEstanteById(id); 
+      setEstante(response.data);
+    } catch (error) {
+      console.error('Error al obtener el estante:', error);
+      alert('No se pudo cargar la información del estante.');
+    }
+  };
+
   const handleEstanteChange = (e) => {
     const { name, value } = e.target;
-    setEstante({ ...estante, [name]: value });
-
     if (name === 'codigoE' && value.length <= 4) {
       setEstante({ ...estante, [name]: value });
     } else if (name !== 'codigoE') {
@@ -20,25 +33,21 @@ const EstanteCreate = () => {
     }
   };
 
-  
   const handleEstanteSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await Config.createEstante(estante);
-      alert('Estante creado exitosamente');
-      setEstante({
-        codigoE: '',
-        descripcionE: ''
-      }); 
+      await Config.updateEstante(id, estante); 
+      alert('Estante actualizado exitosamente');
       navigate('/admin/estante'); 
     } catch (error) {
-      alert('Error al crear el estante');
+      console.error('Error al actualizar el estante:', error);
+      alert('No se pudo actualizar el estante. Por favor, inténtalo nuevamente.');
     }
   };
 
   return (
     <div className="container">
-      <h2 className="mt-4">Crear Estante</h2>
+      <h2 className="mt-4">Editar Estante</h2>
       <form onSubmit={handleEstanteSubmit}>
         <div className="mb-3">
           <label htmlFor="codigoE" className="form-label">Código del Estante</label>
@@ -64,10 +73,10 @@ const EstanteCreate = () => {
             required
           ></textarea>
         </div>
-        <button type="submit" className="btn btn-primary">Crear Estante</button>
+        <button type="submit" className="btn btn-primary">Actualizar Estante</button>
       </form>
     </div>
   );
 };
 
-export default EstanteCreate;
+export default EstanteUpdate;

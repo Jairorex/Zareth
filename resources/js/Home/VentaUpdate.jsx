@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Config from '../Config'; 
-import { useNavigate } from 'react-router-dom';
-const VentaCreate = () => {
+import { useParams, useNavigate } from 'react-router-dom';
+
+const VentaUpdate = () => {
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const [venta, setVenta] = useState({
     codVenta: '',
@@ -14,53 +16,71 @@ const VentaCreate = () => {
 
   const [producto, setProducto] = useState([]);
 
-  
   useEffect(() => {
+    fetchVenta();
     fetchProducto();
-  }, []);
+  }, [id]);
 
-  const fetchProducto = async () => {
-    const response = await Config.getProductoAll();
-    setProducto(response.data);
+
+  const fetchVenta = async () => {
+    try {
+      const response = await Config.getVentaById(id);
+      setVenta(response.data);
+    } catch (error) {
+      console.error('Error al obtener la venta:', error);
+      alert('No se pudo cargar la información de la venta.');
+    }
   };
 
-  
+
+  const fetchProducto = async () => {
+    try {
+      const response = await Config.getProductoAll();
+      setProducto(response.data);
+    } catch (error) {
+      console.error('Error al obtener los productos:', error);
+    }
+  };
+
   const handleVentaChange = (e) => {
     const { name, value } = e.target;
     setVenta({ ...venta, [name]: value });
-    if (name === 'codVenta' && value.length <= 4) {
-      setVenta({ ...venta, [name]: value });
-    } else if (name !== 'codVenta') {
-      setVenta({ ...venta, [name]: value });
-    }
   };
 
-  
   const handleVentaSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await Config.createVenta(venta);
-      alert('Venta creada exitosamente');
-      setVenta({
-        codVenta: '',
-        fecha: '',
-        cantidad: '',
-        PrecioV: '',
-        descripcion: '',
-        producto_id: ''
-      }); 
-      navigate('/admin/venta'); 
-    } catch (error) {
-      console.error(error.response.data);
-      alert('Error al crear la venta');
-    }
+    
+        
+        try {
+        
+            const dataToUpdate = { ...venta };
+            delete dataToUpdate.producto;
+            
+    
+            console.log('Datos enviados al backend:', dataToUpdate);
+    
+            await Config.updateVenta(id, dataToUpdate); 
+            alert('Venta actualizada exitosamente');
+            navigate('/admin/venta'); 
+        } catch (error) {
+            console.error('Error al actualizar la venta:', error);
+    
+            if (error.response) {
+                console.error('Respuesta del servidor:', error.response.data);
+                alert(`Error del servidor: ${error.response.data.message || 'Ocurrió un error inesperado.'}`);
+            } else if (error.request) {
+                console.error('Solicitud fallida:', error.request);
+                alert('No se recibió respuesta del servidor. Verifica tu conexión.');
+            } else {
+                console.error('Error desconocido:', error.message);
+                alert(`Error inesperado: ${error.message}`);
+            }
+        }
   };
-
-  
 
   return (
     <div className="container">
-      <h2 className="mt-4">Crear Venta</h2>
+      <h2 className="mt-4">Editar Venta</h2>
       <form onSubmit={handleVentaSubmit}>
         <div className="mb-3">
           <label htmlFor="codVenta" className="form-label">Código de Venta</label>
@@ -103,7 +123,7 @@ const VentaCreate = () => {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="precioV" className="form-label">Precio</label>
+          <label htmlFor="PrecioV" className="form-label">Precio</label>
           <input
             type="number"
             className="form-control"
@@ -146,10 +166,10 @@ const VentaCreate = () => {
           </select>
         </div>
 
-        <button type="submit" className="btn btn-primary">Crear Venta</button>
+        <button type="submit" className="btn btn-primary">Actualizar Venta</button>
       </form>
     </div>
   );
 };
 
-export default VentaCreate;
+export default VentaUpdate;

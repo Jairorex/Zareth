@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Config from '../Config'; 
+import { useNavigate } from 'react-router-dom';
 
 const ProveedorCreate = () => {
+  const navigate = useNavigate();
   const [proveedor, setProveedor] = useState({
     codigo: '',
     nombre: '',
@@ -22,7 +24,7 @@ const ProveedorCreate = () => {
     }
   };
 
-  // Función para manejar el envío del formulario de Proveedor
+ 
   const handleProveedorSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -35,7 +37,8 @@ const ProveedorCreate = () => {
         telefono: '',
         direccion: '',
        
-      }); // Limpiar los campos después de la creación
+      }); 
+      navigate('/admin/proveedor'); 
     } catch (error) {
       alert('Error al crear el proveedor');
     }
@@ -55,6 +58,7 @@ const ProveedorCreate = () => {
             value={proveedor.codigo}
             onChange={handleProveedorChange}
             required
+            maxLength={4}
           />
         </div>
         <div className="mb-3">
@@ -103,7 +107,7 @@ const ProveedorCreate = () => {
             value={proveedor.direccion}
             onChange={handleProveedorChange}
             required
-            maxLength={4}
+            
           />
         </div>
         
