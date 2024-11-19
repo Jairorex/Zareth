@@ -6,7 +6,7 @@
     <title>Farmacia Zareth</title>
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 
-    @vite("resources/js/app.js")
+    @vite(['resources/js/app.js', 'resources/sass/app.scss'])
 
 </head>
 <body>
